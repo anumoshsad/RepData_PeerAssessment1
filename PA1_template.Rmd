@@ -7,19 +7,97 @@ output:
 
 
 ## Loading and preprocessing the data
-
+First, download and put the csv file in our working directory. Then read the file.
+```{r, echo = TRUE}
+d <- read.csv("activity.csv", header = TRUE)
+attach(d)
+```
+The data is loaded. I will directly use this data frame without any preprocessing.
 
 
 ## What is mean total number of steps taken per day?
+I use the aggregate function to find the total number of steps taken per day and make a data frame "day_total" which contains the total number of steps per day.
 
+```{r, echo = TRUE}
+day_total <- aggregate(list(total.steps = steps), 
+                       list(date = date), FUN=sum)
+head(day_total)
+```
+Now we will make a histogram of the total number of steps taken each day.
+```{r , echo= TRUE}
+total.steps <- day_total$total.steps
+hist(total.steps, breaks = 10)
+```
 
-
+Now I will print the mean and median of the total number of steps taken per day.
+```{r, echo=TRUE}
+summary(total.steps)["Median"]
+summary(total.steps)["Mean"]
+```
 ## What is the average daily activity pattern?
+Now I will find the daily activity pattern. I will use the aggregate function. 
+```{r, echo = TRUE}
+pattern <- aggregate(list(daily.avg = steps), 
+                     list(interval = interval), 
+                     FUN = mean, na.rm = TRUE)
+plot(pattern$interval, pattern$daily.avg, 
+     type="l", xlab = "interval", ylab = "daily.avg")
+```
 
-
-
+I will also find the interval when the daily average is the maximum.
+```{r, echo=TRUE}
+pattern[which.max(pattern$daily.avg),1]
+```
 ## Imputing missing values
+Now I will find the total number of missing values in the dataset.
+```{r, echo=TRUE}
+missing <- sum(is.na(steps))
+sprintf("Total number of missing values: %s", 
+        missing)
+```
+Now I will imput values for the na s. I will substitute all the na's with the daily average for that 5-minute interval.
+```{r, echo = TRUE}
+new_df <- data.frame(date= date,
+                     interval = interval)
 
+new_steps <- steps
+for (i in 1:length(steps))
+    { if (is.na(steps[i]))
+    {new_steps[i] <- 
+        pattern$daily.avg[interval[i]==pattern$interval]}
+}
+new_df["new_steps"] <- new_steps
+head(new_df)
+```
 
-
+With this new dataframe I will plot the histogram and time series again.
+```{r, echo = TRUE}
+par(mfrow = c(1,2))
+newday_total <- aggregate(list(total.steps = new_steps), 
+                          list(date = date), FUN=sum, na.rm=TRUE)
+head(newday_total)
+newtotal.steps <- newday_total$total.steps
+hist(newtotal.steps, 
+     breaks = 10, main = "Imputed values")
+hist(total.steps, breaks = 10, 
+     main = "Original values")
+summary(newtotal.steps)["Median"]
+summary(newtotal.steps)["Mean"]
+```
+We see that the median remains same but the mean increases. We can easily see that there are a lot of values in the left side of the histogram, because we ignored the missing values. But after imputing the missing values the histogram now looks a bell shaped histogram.
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r, echo = TRUE}
+library(chron)
+library(dplyr)
+library(lattice)
+new_df$weekdays <- ifelse(is.weekend(new_df$date),
+                          "Weekend","Weekday")
+head(new_df)
+daily <- group_by(new_df, interval, weekdays)
+daily.data <-  summarise(daily, daily.avg = mean(new_steps))
+xyplot(daily.data$daily.avg~ daily.data$interval|daily.data$weekdays,
+       type = "l", layout = c(1,2),
+       xlab= "interval", ylab = "daily average", 
+       main = "weekdays vs weekend")
+```
+
