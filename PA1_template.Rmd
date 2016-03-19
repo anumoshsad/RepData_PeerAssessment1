@@ -86,7 +86,7 @@ summary(newtotal.steps)["Mean"]
 ```
 We see that the median remains same but the mean increases. We can easily see that there are a lot of values in the left side of the histogram, because we ignored the missing values. But after imputing the missing values the histogram now looks a bell shaped histogram.
 ## Are there differences in activity patterns between weekdays and weekends?
-```{r, echo = TRUE}
+```{r, echo = TRUE, message=FALSE}
 library(chron)
 library(dplyr)
 library(lattice)

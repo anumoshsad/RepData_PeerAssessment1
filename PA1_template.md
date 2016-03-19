@@ -170,22 +170,6 @@ We see that the median remains same but the mean increases. We can easily see th
 ```r
 library(chron)
 library(dplyr)
-```
-
-```
-## 
-## Attaching package: 'dplyr'
-## 
-## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-## 
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-```
-
-```r
 library(lattice)
 new_df$weekdays <- ifelse(is.weekend(new_df$date),
                           "Weekend","Weekday")

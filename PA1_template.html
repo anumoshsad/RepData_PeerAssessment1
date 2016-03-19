@@ -161,18 +161,8 @@ hist(total.steps, breaks = 10,
 ## 10770</code></pre>
 <p>We see that the median remains same but the mean increases. We can easily see that there are a lot of values in the left side of the histogram, because we ignored the missing values. But after imputing the missing values the histogram now looks a bell shaped histogram. ## Are there differences in activity patterns between weekdays and weekends?</p>
 <pre class="r"><code>library(chron)
-library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: 'dplyr'
-## 
-## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-## 
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>library(lattice)
+library(dplyr)
+library(lattice)
 new_df$weekdays &lt;- ifelse(is.weekend(new_df$date),
                           &quot;Weekend&quot;,&quot;Weekday&quot;)
 head(new_df)</code></pre>
